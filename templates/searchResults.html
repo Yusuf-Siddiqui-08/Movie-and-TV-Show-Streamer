@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <style>
+    .search-result-table {
+      border-collapse: seperate;
+      border-spacing:10px;
+    }
+    .movie-name {
+      border-right: 5px solid black
+    }
+  </style>
+  <head>
+  </head>
+  <body>
+    <table class = "search-result-table">
+  <thead>
+    <tr>
+      <th>Movie Name</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for name, id in results.items() %}
+   <tr>
+       <td class="movie-name"> {{ name }} </td>
+       <td> <a href= "/watch/{{ id }}">Click Here to watch</a></td>
+   </tr>
+  {% endfor %}
+  </tbody>
+</table>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <style>
+  </style>
+  <script>
+    function search() {
+      let title = document.getElementById("title").value;
+      window.location.href = "/search/movie/" + title + "/1/";
+    }
+  </script>
+  <head>
+  </head>
+  <body>
+    <h1>Welcome to Yusuf's Streaming Service</h1>
+    <p>As of right now, this service only supports movies however TV series are soon to come!</p>
+    <div class="search-params" style="border: 2px solid black">
+      <div class="content-type-form">
+        <form>
+          <label for="type"><h3>Movie or TV Series:</h3></label>
+          <label for="Movie">Movie</label>
+          <input type="radio" id="movie" value="Movie" name="type" checked>
+          <br>
+          <label for="TV Series">TV Series (unavailable)</label>
+          <input type="radio" id="tv series" value="TV Series" name="type">
+        </form>
+        </div>
+      <form>
+        <label for="title"><h3>Title:</h3></label>
+        <input type="text" id="title" name="title">
+        <input type="button" value="Search" onclick="search()">
+      </form>
+      </div>
+  </body>
+</html>

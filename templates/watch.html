@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <style>
+      #movie-frame {
+        padding-top:100px;
+      }
+    </style>
+    <script>
+      let height = screen.height;
+      document.getElementById("movie").height = height/2;
+    </script>
+    <h1>Instructions:</h1>
+    <p>Click "Servers" and select any server, then press play. If that server isn't working, try another one.</p>
+    <div id="movie-frame" align=center><iframe id="movie" width=90% height=900 src="https://2embed.org/embed/movie/{{id}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </body>
+</html>
