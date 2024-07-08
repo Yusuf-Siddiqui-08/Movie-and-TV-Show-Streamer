@@ -22,6 +22,9 @@ def searchMovies(movieTitle, pageNum):
   results = json.loads(response.content.decode("utf-8"))
   if results.get("status_code") == 46:
     return results.get("status_message")
+  total_pages = results.get("total_pages")
+  if total_pages < int(pageNum):
+    return "There are no more pages! The last page was " + str(total_pages) + "! Click <a href='/search/movie/" + movieTitle + "/" + str(total_pages) + "/'>here</a> to see the last page!"
   results = results.get("results")
   resultsList = {}
   for movie in results:
