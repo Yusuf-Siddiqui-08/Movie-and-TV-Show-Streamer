@@ -19,7 +19,10 @@ def home():
 def searchMovies(movieTitle, pageNum):
   url = "https://api.themoviedb.org/3/search/movie?query=" + movieTitle + "&include_adult=true&language=en-US&page=" + pageNum
   response = requests.get(url, headers=headers)
-  results = json.loads(response.content.decode("utf-8")).get("results")
+  results = json.loads(response.content.decode("utf-8"))
+  if results.get("status_code") == 46:
+    return results.get("status_message")
+  results = results.get("results")
   resultsList = {}
   for movie in results:
     resultMovieName = movie["original_title"]
