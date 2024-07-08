@@ -2,17 +2,12 @@ from flask import Flask, render_template
 from waitress import serve
 import requests
 import json
-
-#url = "https://api.themoviedb.org/3/search/movie?query=john wick&include_adult=false&language=en-US&page=1"
+import os
 
 headers = {
     "accept": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZWViOTcyZWI0Y2IzN2VlYzk0NDQ2NWY5ZWZmOGVjNyIsInN1YiI6IjY0NzNiMWI0OWFlNjEzMDEwNDVhZjA0YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.znnMuDSefeevNYsSVORaZYN_iGlvS-tLrI5n2-iqOAs"
+    "Authorization": os.environ['TMDB_API_KEY']
 }
-
-#response = requests.get(url, headers=headers)
-
-#print(json.loads(response.content.decode("utf-8")).get("results")[0])
 
 app = Flask(__name__)
 
