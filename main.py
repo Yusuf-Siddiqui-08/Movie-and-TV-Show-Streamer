@@ -1,9 +1,10 @@
-from flask import Flask, render_template
-from waitress import serve
 from datetime import datetime
-import requests
 import json
 import os
+
+from flask import Flask, render_template
+from waitress import serve
+import requests
 
 headers = {
     "accept": "application/json",
