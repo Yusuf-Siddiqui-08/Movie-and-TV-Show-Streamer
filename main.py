@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from waitress import serve
+from datetime import datetime
 import requests
 import json
 import os
@@ -26,11 +27,19 @@ def searchMovies(movieTitle, pageNum):
   if total_pages < int(pageNum):
     return "There are no more pages! The last page was " + str(total_pages) + "! Click <a href='/search/movie/" + movieTitle + "/" + str(total_pages) + "/'>here</a> to see the last page!"
   results = results.get("results")
-  resultsList = {}
+  resultsList = []
+  i = 0
   for movie in results:
+    i+=1
+    resultMovieYear = movie.get("release_date")
+    if resultMovieYear == None: 
+      resultMovieYear = "Unknown"
+    else:
+      date_format = "%Y-%m-%d"
+      resultMovieYear = datetime.strptime(resultMovieYear, date_format).year
     resultMovieName = movie["original_title"]
     resultMovieId = movie["id"]
-    resultsList[resultMovieName] = resultMovieId
+    resultsList.append({"name":resultMovieName, "id" : resultMovieId, "year" : resultMovieYear})
   return render_template("searchResults.html", results=resultsList)
 
 @app.route("/watch/<movieId>/")

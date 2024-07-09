@@ -16,14 +16,14 @@
   <thead>
     <tr>
       <th>Movie Name</th>
-      <th>Link</th>
+      <th>Year Released</th>
     </tr>
   </thead>
   <tbody>
-  {% for name, id in results.items() %}
+  {% for movie in results %}
    <tr>
-       <td class="movie-name"> {{ name }} </td>
-       <td> <a href= "/watch/{{ id }}">Click Here to watch</a></td>
+      <td class="movie-name"> <a href= "/watch/{{ movie.id }}">{{ movie.name }}</a></td>
+      <td>{{ movie.year }}</td>
    </tr>
   {% endfor %}
   </tbody>
