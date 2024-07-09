@@ -40,7 +40,7 @@ def searchMovies(movieTitle, pageNum):
   resultsList = []
   for movie in results:
     resultMovieYear = movie.get("release_date")
-    if resultMovieYear == None:
+    if resultMovieYear == None or resultMovieYear == "":
       resultMovieYear = "Unknown"
     else:
       resultMovieYear = get_year(resultMovieYear)
@@ -51,7 +51,7 @@ def searchMovies(movieTitle, pageNum):
         "id": resultMovieId,
         "year": resultMovieYear
     })
-  return render_template("searchMovieResults.html", results=resultsList)
+  return render_template("searchMovieResults.html", results=resultsList, page=pageNum, title=movieTitle)
 
 
 @app.route("/search/tv/<tvTitle>/<pageNum>/")
@@ -75,7 +75,7 @@ def searchTV(tvTitle, pageNum):
     else:
       resultTvYear = get_year(resultTvYear)
     resultsList.append({"name":resultTvName, "id":resultTvId, "year":resultTvYear})
-  return render_template("searchTvResults.html", results=resultsList)
+  return render_template("searchTvResults.html", results=resultsList, page=pageNum, title=tvTitle)
 
 @app.route("/watch/<type>/<id>/")
 def watchMovie(type,id):

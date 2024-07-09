@@ -9,6 +9,22 @@
       border-right: 5px solid black
     }
   </style>
+  <script>
+    let nextPage = {{ page }} + 1;
+    let prevPage = {{ page }} - 1;
+
+    function changePage(change) {
+      if (change ===  "next") {
+        window.location.href = "/search/movie/{{ title }}/" + nextPage + "/";
+      } else {
+        if (prevPage === 0){
+          alert("This is the first page!")
+        } else{
+          window.location.href = "/search/movie/{{ title }}/" + prevPage + "/";
+        }       
+      }
+    }
+  </script>
   <head>
     <title>Search Results</title>
   </head>
@@ -29,5 +45,7 @@
     {% endfor %}
     </tbody>
   </table>
+  <button onclick="changePage('prev')">Prev Page</button>
+  <button onclick="changePage('next')">Next Page</button>
   </body>
 </html>

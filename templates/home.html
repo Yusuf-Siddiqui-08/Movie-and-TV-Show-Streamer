@@ -5,15 +5,16 @@
   <script>
     function search() {
       let title = document.getElementById("title").value;
-      let type = document.getElementById("type").value;
-      if (type = "Movie") {
+      let type = Array.from(document.getElementsByName("type")).find(r => r.checked).value;
+      console.log(type);
+      if (type === "Movie") {
         window.location.href = "/search/movie/" + title + "/1/";
       }
-      else if (type = "TV Series") {
+      else if (type === "TV Series") {
         window.location.href = "/search/tv/" + title + "/1/";
       }
       else {
-        alert("Please select either Movie or TV Series!");
+        alert("Please select a type!");
       }
     }
   </script>
