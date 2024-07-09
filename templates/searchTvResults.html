@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+  </style>
+  <script>
+  </script>
+  <head>
+    <title>Search Results</title>
+  </head>
+  <body>
+    <table class = "search-result-table">
+      <thead>
+        <tr>
+          <th>TV Series Name</th>
+          <th>Year Released</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for tv in results %}
+       <tr>
+          <td class="tv-name"> <a href= "/watch/tv/{{ tv.id }}">{{ tv.name }}</a></td>
+          <td>{{ tv.year }}</td>
+       </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

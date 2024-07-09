@@ -13,9 +13,15 @@ headers = {
 
 app = Flask(__name__)
 
+def get_year(date:str) -> int:
+  date_format = "%Y-%m-%d"
+  return datetime.strptime(date, date_format).year
+
+
 @app.route("/")
 def home():
   return render_template("home.html")
+
 
 @app.route("/search/movie/<movieTitle>/<pageNum>/")
 def searchMovies(movieTitle, pageNum):
@@ -26,26 +32,59 @@ def searchMovies(movieTitle, pageNum):
     return results.get("status_message")
   total_pages = results.get("total_pages")
   if total_pages < int(pageNum):
-    return "There are no more pages! The last page was " + str(total_pages) + "! Click <a href='/search/movie/" + movieTitle + "/" + str(total_pages) + "/'>here</a> to see the last page!"
+    return "There are no more pages! The last page was " + str(
+        total_pages
+    ) + "! Click <a href='/search/movie/" + movieTitle + "/" + str(
+        total_pages) + "/'>here</a> to see the last page!"
   results = results.get("results")
   resultsList = []
-  i = 0
   for movie in results:
-    i+=1
     resultMovieYear = movie.get("release_date")
-    if resultMovieYear == None: 
+    if resultMovieYear == None:
       resultMovieYear = "Unknown"
     else:
-      date_format = "%Y-%m-%d"
-      resultMovieYear = datetime.strptime(resultMovieYear, date_format).year
+      resultMovieYear = get_year(resultMovieYear)
     resultMovieName = movie["original_title"]
     resultMovieId = movie["id"]
-    resultsList.append({"name":resultMovieName, "id" : resultMovieId, "year" : resultMovieYear})
-  return render_template("searchResults.html", results=resultsList)
+    resultsList.append({
+        "name": resultMovieName,
+        "id": resultMovieId,
+        "year": resultMovieYear
+    })
+  return render_template("searchMovieResults.html", results=resultsList)
 
-@app.route("/watch/<movieId>/")
-def watchMovie(movieId):
-  return render_template("watch.html", id=movieId)
+
+@app.route("/search/tv/<tvTitle>/<pageNum>/")
+def searchTV(tvTitle, pageNum):
+  url = "https://api.themoviedb.org/3/search/tv?query=" + tvTitle + "&include_adult=false&language=en-US&page=" + pageNum
+  response = requests.get(url, headers=headers)
+  results = json.loads(response.content.decode("utf-8"))
+  if results.get("status_code") == 46:
+    return results.get("status_message")
+  total_pages = results.get("total_pages")
+  if total_pages < int(pageNum):
+    return "There are no more pages! The last page was " + str(total_pages) + "! Click <a href='/search/tv/" + tvTitle + "/" + str(total_pages) + "/'>here</a> to see the last page!"
+  results = results.get("results")
+  resultsList = []
+  for tv in results:
+    resultTvName = tv["original_name"]
+    resultTvId = tv["id"]
+    resultTvYear = tv["first_air_date"]
+    if resultTvYear == None:
+      resultTvYear = "Unknown"
+    else:
+      resultTvYear = get_year(resultTvYear)
+    resultsList.append({"name":resultTvName, "id":resultTvId, "year":resultTvYear})
+  return render_template("searchTvResults.html", results=resultsList)
+
+@app.route("/watch/<type>/<id>/")
+def watchMovie(type,id):
+  if type == "movie":
+    return render_template("watchMovie.html", id=id)
+  elif type == "tv":
+    return render_template("watchTv.html", id=id)
+  else:
+    return "Invalid type", 400
 
 if __name__ == "__main__":
   serve(app, host="0.0.0.0", port=8080)

@@ -10,6 +10,7 @@
     }
   </style>
   <head>
+    <title>Search Results</title>
   </head>
   <body>
     <table class = "search-result-table">
@@ -22,7 +23,7 @@
   <tbody>
   {% for movie in results %}
    <tr>
-      <td class="movie-name"> <a href= "/watch/{{ movie.id }}">{{ movie.name }}</a></td>
+      <td class="movie-name"> <a href= "/watch/movie/{{ movie.id }}">{{ movie.name }}</a></td>
       <td>{{ movie.year }}</td>
    </tr>
   {% endfor %}
