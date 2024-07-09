@@ -14,20 +14,20 @@
   </head>
   <body>
     <table class = "search-result-table">
-  <thead>
-    <tr>
-      <th>Movie Name</th>
-      <th>Year Released</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for movie in results %}
-   <tr>
-      <td class="movie-name"> <a href= "/watch/movie/{{ movie.id }}">{{ movie.name }}</a></td>
-      <td>{{ movie.year }}</td>
-   </tr>
-  {% endfor %}
-  </tbody>
-</table>
+      <thead>
+        <tr>
+          <th>Movie Name</th>
+          <th>Year Released</th>
+        </tr>
+      </thead>
+    <tbody>
+    {% for movie in results %}
+     <tr>
+        <td class="movie-name"> <a href= "/watch/movie/{{ movie.id }}">{{ movie.name }}</a></td>
+        <td>{{ movie.year }}</td>
+     </tr>
+    {% endfor %}
+    </tbody>
+  </table>
   </body>
 </html>
