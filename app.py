@@ -86,5 +86,5 @@ def watchMovie(type,id):
   else:
     return "Invalid type", 400
 
-if __name__ == "__main__":
+if __name__ == "__app__":
   serve(app, host="0.0.0.0", port=8080)
