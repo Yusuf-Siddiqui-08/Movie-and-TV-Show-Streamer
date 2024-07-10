@@ -2,5 +2,4 @@ datetime
 json
 os
 flask
-waitresss
 requests
