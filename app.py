@@ -3,7 +3,6 @@ import json
 import os
 
 from flask import Flask, render_template
-from waitress import serve
 import requests
 
 headers = {
@@ -87,4 +86,4 @@ def watchMovie(type,id):
     return "Invalid type", 400
 
 if __name__ == "__app__":
-  serve(app, host="0.0.0.0", port=8080)
+  app.run(host="0.0.0.0", port=8080)
