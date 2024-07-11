@@ -1,8 +1,8 @@
 # Movie and TV Show Streamer
 ## Description:
-This program deploys a **Flask** website on a **Waitress** WSGI server on the internet where it can be accessed by any user. A user can then interact with the website with the following features:
+This program deploys a **Flask** website on a **Waitress** WSGI server on the internet where any user can access it. A user can then interact with the website with the following features:
 - Able to search for any available movie on the **2Embed** database
-- Able search for any available TV show
+- Able to search for any available TV show
 - Able to then watch their movie
 - Able to watch any available episode from any season on their TV show
 
@@ -27,7 +27,7 @@ The following are steps to deploy this program on your own.
 1. Switch from "main" branch to "no-waitress" branch
 2. Click the green button "Code"
 3. Download Zip
-4. Find file in File Explorer and "Extract All"
+4. Find the file in File Explorer and "Extract All"
 5. Open your preferred IDE and open a new Python 3 project
 6. Under File open the extracted zip code and run
 7. Click the localhost link that appears in the console
