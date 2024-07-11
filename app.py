@@ -13,7 +13,8 @@ headers = {
 
 app = Flask(__name__)
 
-def get_year(date:str) -> int:
+
+def get_year(date: str) -> int:
   date_format = "%Y-%m-%d"
   return datetime.strptime(date, date_format).year
 
@@ -40,7 +41,7 @@ def searchMovies(movieTitle, pageNum):
   resultsList = []
   for movie in results:
     resultMovieYear = movie.get("release_date")
-    if resultMovieYear == None or resultMovieYear == "":
+    if resultMovieYear is None or resultMovieYear == "":
       resultMovieYear = "Unknown"
     else:
       resultMovieYear = get_year(resultMovieYear)
@@ -51,7 +52,10 @@ def searchMovies(movieTitle, pageNum):
         "id": resultMovieId,
         "year": resultMovieYear
     })
-  return render_template("searchMovieResults.html", results=resultsList, page=pageNum, title=movieTitle)
+  return render_template("searchMovieResults.html",
+                         results=resultsList,
+                         page=pageNum,
+                         title=movieTitle)
 
 
 @app.route("/search/tv/<tvTitle>/<pageNum>/")
@@ -63,28 +67,37 @@ def searchTV(tvTitle, pageNum):
     return results.get("status_message")
   total_pages = results.get("total_pages")
   if total_pages < int(pageNum):
-    return "There are no more pages! The last page was " + str(total_pages) + "! Click <a href='/search/tv/" + tvTitle + "/" + str(total_pages) + "/'>here</a> to see the last page!"
+    return "There are no more pages! The last page was " + str(
+        total_pages) + "! Click <a href='/search/tv/" + tvTitle + "/" + str(
+            total_pages) + "/'>here</a> to see the last page!"
   results = results.get("results")
   resultsList = []
   for tv in results:
     resultTvName = tv["original_name"]
     resultTvId = tv["id"]
     resultTvYear = tv["first_air_date"]
-    if resultTvYear == None:
-      resultTvYear = "Unknown"
-    else:
-      resultTvYear = get_year(resultTvYear)
-    resultsList.append({"name":resultTvName, "id":resultTvId, "year":resultTvYear})
-  return render_template("searchTvResults.html", results=resultsList, page=pageNum, title=tvTitle)
+    resultTvYear = "Unknown" if resultTvYear is None else get_year(
+        resultTvYear)
+    resultsList.append({
+        "name": resultTvName,
+        "id": resultTvId,
+        "year": resultTvYear
+    })
+  return render_template("searchTvResults.html",
+                         results=resultsList,
+                         page=pageNum,
+                         title=tvTitle)
+
 
 @app.route("/watch/<type>/<id>/")
-def watchMovie(type,id):
+def watchMovie(type, id):
   if type == "movie":
     return render_template("watchMovie.html", id=id)
   elif type == "tv":
     return render_template("watchTv.html", id=id)
   else:
     return "Invalid type", 400
+
 
 if __name__ == "__app__":
   serve(app, host="0.0.0.0", port=8080)
