@@ -1,45 +1,58 @@
-<!doctype html>
-<html>
-  <style>
-  </style>
-  <script>
-    function search() {
-      let title = document.getElementById("title").value;
-      let type = Array.from(document.getElementsByName("type")).find(r => r.checked).value;
-      console.log(type);
-      if (type === "Movie") {
-        window.location.href = "/search/movie/" + title + "/1/";
-      }
-      else if (type === "TV Series") {
-        window.location.href = "/search/tv/" + title + "/1/";
-      }
-      else {
-        alert("Please select a type!");
-      }
-    }
-  </script>
-  <head>
-  </head>
-  <body>
-    <h1>Welcome to Yusuf's Streaming Service</h1>
-    <h2>!!!WARNING: USE AN AD-BLOCKER!!!</h2>
-    <h3>If the movie viewer opens a new link, CLOSE IMMEDIATELY!</h3>
-    <div class="search-params" style="border: 2px solid black">
-      <div class="content-type-form">
-        <form>
-          <label for="type"><h3>Movie or TV Series:</h3></label>
-          <label for="Movie">Movie</label>
-          <input type="radio" id="type" value="Movie" name="type" checked>
-          <br>
-          <label for="TV Series">TV Series</label>
-          <input type="radio" id="type" value="TV Series" name="type">
-        </form>
-        </div>
-      <form>
-        <label for="title"><h3>Title:</h3></label>
-        <input type="text" id="title" name="title">
-        <input type="button" value="Search" onclick="search()">
-      </form>
+{% extends 'base.html' %}
+{% block title %}Streaming Service • Home{% endblock %}
+{% block content %}
+  <section class="grid grid-2">
+    <div class="card">
+      <div class="card-inner">
+        <div class="kicker">Welcome</div>
+        <h1>Streaming Service</h1>
+        <p class="muted">Search for movies and TV shows. Please use an ad-blocker for your safety.</p>
+        <div class="alert" role="alert">Warning: If a viewer opens a new link, close it immediately.</div>
       </div>
-  </body>
-</html>
+    </div>
+    <div class="card">
+      <div class="card-inner">
+        <h2>Find something to watch</h2>
+        <form onsubmit="return false;" class="grid">
+          <div>
+            <label for="title"><span class="badge">Title</span></label>
+            <input type="text" id="title" name="title" class="input" placeholder="e.g., Inception" />
+          </div>
+          <div>
+            <span class="badge">Type</span>
+            <div style="display:flex; gap:12px; margin-top:8px;">
+              <label><input type="radio" name="type" value="Movie" checked /> Movie</label>
+              <label><input type="radio" name="type" value="TV Series" /> TV Series</label>
+            </div>
+          </div>
+          <div>
+            <button class="btn" onclick="search()">Search</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+{% block scripts %}
+<script>
+  function search() {
+    const title = document.getElementById('title').value.trim();
+    const checked = Array.from(document.getElementsByName('type')).find(r => r.checked);
+    const type = checked ? checked.value : null;
+    if (!type) {
+      alert('Please select a type!');
+      return;
+    }
+    if (!title) {
+      alert('Please enter a title.');
+      return;
+    }
+    const encodedTitle = encodeURIComponent(title);
+    if (type === 'Movie') {
+      window.location.href = `/search/movie/${encodedTitle}/1/`;
+    } else if (type === 'TV Series') {
+      window.location.href = `/search/tv/${encodedTitle}/1/`;
+    }
+  }
+</script>
+{% endblock %}

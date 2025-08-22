@@ -1,51 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-  <style>
-    .search-result-table {
-      border-collapse: seperate;
-      border-spacing:10px;
-    }
-    .movie-name {
-      border-right: 5px solid black
-    }
-  </style>
-  <script>
-    let nextPage = {{ page }} + 1;
-    let prevPage = {{ page }} - 1;
+{% extends 'base.html' %}
+{% block title %}Streaming Service • TV Results{% endblock %}
+{% block content %}
+  <h1>TV shows matching “{{ title }}”</h1>
 
-    function changePage(change) {
-      if (change ===  "next") {
-        window.location.href = "/search/tv/{{ title }}/" + nextPage + "/";
+  <div style="margin: 8px 0;">
+    <strong>Sort:</strong>
+    {% macro link(text, s, o) -%}
+      <a class="btn btn-secondary" href="?sort={{ s }}&order={{ o }}">{{ text }}{% if sort==s and order==o %} ✓{% endif %}</a>
+    {%- endmacro %}
+    {{ link('Most popular', 'popularity', 'desc') }}
+    {{ link('Least popular', 'popularity', 'asc') }}
+    {{ link('Highest rated', 'rating', 'desc') }}
+    {{ link('Lowest rated', 'rating', 'asc') }}
+    {{ link('A–Z', 'name', 'asc') }}
+    {{ link('Newest', 'year', 'desc') }}
+    {{ link('Oldest', 'year', 'asc') }}
+  </div>
+
+  <div class="card" style="margin-top:8px;">
+    <div class="card-inner">
+      <table class="table" id="resultsTable">
+        <thead>
+          <tr>
+            <th>TV Series</th>
+            <th>Year</th>
+            <th>Popularity</th>
+            <th>Rating</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for tv in results %}
+          <tr>
+            <td class="cell-title"><a href="/watch/tv/{{ tv.id }}">{{ tv.name }}</a></td>
+            <td class="cell-year">{{ tv.year }}</td>
+            <td class="cell-popularity">{{ tv.popularity|round(1) }}</td>
+            <td class="cell-rating">{{ tv.rating|round(1) }}</td>
+            <td class="row-actions"><a class="btn btn-secondary" href="/watch/tv/{{ tv.id }}">Watch</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="pager">
+        <button class="btn btn-secondary" onclick="changePage('prev')">Prev</button>
+        <span class="badge">Page {{ page }}</span>
+        <button class="btn" onclick="changePage('next')">Next</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const nextPage = {{ page }} + 1;
+  const prevPage = {{ page }} - 1;
+  const sort = encodeURIComponent(`{{ sort or 'popularity' }}`);
+  const order = encodeURIComponent(`{{ order or 'desc' }}`);
+  function changePage(change) {
+    const encTitle = encodeURIComponent(`{{ title }}`);
+    const qs = `?sort=${sort}&order=${order}`;
+    if (change === 'next') {
+      window.location.href = `/search/tv/${encTitle}/${nextPage}/${qs}`;
+    } else {
+      if (prevPage <= 0) {
+        alert('This is the first page!');
       } else {
-        if (prevPage === 0){
-          alert("This is the first page!")
-        } else{
-          window.location.href = "/search/tv/{{ title }}/" + prevPage + "/";
-        }       
+        window.location.href = `/search/tv/${encTitle}/${prevPage}/${qs}`;
       }
     }
-  </script>
-  <head>
-    <title>Search Results</title>
-  </head>
-  <body>
-    <table class = "search-result-table">
-      <thead>
-        <tr>
-          <th>TV Series Name</th>
-          <th>Year Released</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for tv in results %}
-       <tr>
-          <td class="tv-name"> <a href= "/watch/tv/{{ tv.id }}">{{ tv.name }}</a></td>
-          <td>{{ tv.year }}</td>
-       </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    <button onclick="changePage('prev')">Prev Page</button>
-    <button onclick="changePage('next')">Next Page</button>
-  </body>
-</html>
+  }
+</script>
+{% endblock %}

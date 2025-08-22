@@ -1,24 +1,19 @@
-<!doctype html>
-<html>
-  <head>
-  </head>
-  <body>
-    <style>
-      .movie-frame {
-        padding-top:100px;
-        background: transparent;
-      }
-      iframe.movie {
-        z-index:-2;
-      }
-    </style>
-    <script>
-      alert("WARNING: USE AN AD-BLOCKER!")
-      let height = screen.height;
-      document.getElementById("movie").height = height/2;
-    </script>
-    <h2>!!!WARNING: USE AN AD-BLOCKER!!!</h2>
-    <h3>If the movie viewer opens a new link, CLOSE IMMEDIATELY!</h3>
-    <div id="movie-frame" align=center><iframe class="movie" id="movie" width=90% height=900 src="https://www.2embed.cc/embed/{{id}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Streaming Service • Watch Movie{% endblock %}
+{% block content %}
+  <div class="alert" role="alert">Warning: Use an ad-blocker. If a new tab opens, close it immediately.</div>
+  <div class="iframe-wrap" style="margin-top:16px;">
+    <div class="iframe-box">
+      <iframe id="movie" src="https://www.2embed.cc/embed/{{id}}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Ensure focus styles work and provide minimal UX hint
+  window.addEventListener('load', () => {
+    try { document.getElementById('movie')?.focus(); } catch (e) {}
+    alert('WARNING: USE AN AD-BLOCKER!');
+  });
+</script>
+{% endblock %}
