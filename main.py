@@ -192,6 +192,105 @@ def api_search_tv():
     })
 
 
+def _full_poster_url(poster_path: Optional[str]) -> Optional[str]:
+    if not poster_path:
+        return None
+    # Use a larger size for better quality posters
+    return f"https://image.tmdb.org/t/p/w500{poster_path}"
+
+
+@app.get("/api/details/<kind>/<int:item_id>")
+def api_details(kind: str, item_id: int):
+    kind = (kind or "").strip().lower()
+    if kind not in {"movie", "tv"}:
+        return jsonify({"error": "Invalid kind. Must be 'movie' or 'tv'."}), 400
+    # Build TMDB details URL with credits appended
+    url = f"{TMDB_BASE_URL}/{kind}/{item_id}?append_to_response=credits&language=en-US"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        data: Dict[str, Any] = resp.json()
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch details: {e}"}), 502
+
+    if isinstance(data, dict) and data.get("status_code") and data.get("status_code") != 1:
+        # TMDB style error
+        return jsonify({"error": data.get("status_message", "Failed to fetch details."), "status_code": data.get("status_code")}), 400
+
+    # Extract name/title depending on kind
+    name = data.get("original_title") if kind == "movie" else data.get("original_name")
+    overview = data.get("overview") or ""
+    poster = _full_poster_url(data.get("poster_path"))
+
+    # Extract directors from crew (job contains 'Director')
+    directors: List[str] = []
+    try:
+        crew = ((data.get("credits") or {}).get("crew") or [])
+        for c in crew:
+            job = (c.get("job") or "").lower()
+            if "director" in job:
+                nm = c.get("name")
+                if nm and nm not in directors:
+                    directors.append(nm)
+        # Fallback for TV: use creators if no directors found
+        if kind == "tv" and not directors:
+            creators = data.get("created_by") or []
+            for c in creators:
+                nm = c.get("name")
+                if nm and nm not in directors:
+                    directors.append(nm)
+    except Exception:
+        pass
+
+    # Extract top actors (cast)
+    actors: List[str] = []
+    try:
+        cast = ((data.get("credits") or {}).get("cast") or [])
+        for c in cast:
+            nm = c.get("name")
+            if nm and nm not in actors:
+                actors.append(nm)
+    except Exception:
+        pass
+
+    # Common fields for both kinds
+    genres = [g.get("name") for g in (data.get("genres") or []) if g.get("name")]
+    vote_count = data.get("vote_count")
+    vote_average = data.get("vote_average")
+
+    # Movie/TV specific fields
+    movie_fields: Dict[str, Any] = {}
+    tv_fields: Dict[str, Any] = {}
+    if kind == "movie":
+        movie_fields = {
+            "runtime": data.get("runtime"),  # minutes
+            "release_date": data.get("release_date"),
+        }
+    else:
+        tv_fields = {
+            "first_air_date": data.get("first_air_date"),
+            "last_air_date": data.get("last_air_date"),
+            "in_production": data.get("in_production"),
+            "number_of_seasons": data.get("number_of_seasons"),
+            "number_of_episodes": data.get("number_of_episodes"),
+            "series_type": data.get("type"),
+        }
+
+    return jsonify({
+        "id": item_id,
+        "kind": kind,
+        "name": name or "Unknown",
+        "overview": overview,
+        "poster": poster,
+        "directors": directors,
+        "actors": actors,
+        "genres": genres,
+        "vote_count": vote_count,
+        "vote_average": vote_average,
+        **movie_fields,
+        **tv_fields,
+    })
+
+
 # Serve the React single-page app
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")

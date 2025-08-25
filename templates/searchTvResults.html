@@ -35,7 +35,10 @@
             <td class="cell-title"><a href="/watch/tv/{{ tv.id }}">{{ tv.name }}</a></td>
             <td class="cell-year">{{ tv.year }}</td>
             <td class="cell-popularity">{{ tv.popularity|round(1) }}</td>
-            <td class="cell-rating">{{ tv.rating|round(1) }}</td>
+            <td class="cell-rating">
+              {% set r = tv.rating|round(1) %}
+              {{ r|int if r == r|int else r }}/10
+            </td>
             <td class="row-actions"><a class="btn btn-secondary" href="/watch/tv/{{ tv.id }}">Watch</a></td>
           </tr>
         {% endfor %}

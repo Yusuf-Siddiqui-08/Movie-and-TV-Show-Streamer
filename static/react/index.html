@@ -12,9 +12,17 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#/">Streaming Service</a>
+      <a class="brand" href="/">Streaming Service</a>
       <nav class="nav">
-        <a href="#/" class="nav-link">Home</a>
+        <a href="/" class="nav-link">Home</a>
+        <div class="nav-search" id="nav-search">
+          <input type="text" id="nav-search-input" class="input" placeholder="Search titles..." aria-label="Search titles" />
+          <button class="btn" id="nav-search-btn" type="button" aria-haspopup="true" aria-expanded="false">Search</button>
+          <div class="nav-search-dropdown" id="nav-search-dropdown" role="menu" aria-hidden="true">
+            <button class="dropdown-item" data-kind="movie" role="menuitem">Movie</button>
+            <button class="dropdown-item" data-kind="tv" role="menuitem">TV Show</button>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -33,5 +41,48 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" src="/static/react/app.jsx"></script>
+  <script>
+    (function(){
+      const root = document.getElementById('nav-search');
+      if (!root) return;
+      const input = document.getElementById('nav-search-input');
+      const btn = document.getElementById('nav-search-btn');
+      const menu = document.getElementById('nav-search-dropdown');
+
+      function showMenu(){
+        if (!input.value.trim()) { alert('Please enter a title.'); return; }
+        menu.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden','false');
+      }
+      function hideMenu(){
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden','true');
+      }
+      function go(kind){
+        const t = input.value.trim();
+        if (!t) { hideMenu(); return; }
+        const enc = encodeURIComponent(t);
+        window.location.hash = `#/search/${kind}/${enc}/1`;
+        hideMenu();
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (menu.classList.contains('open')) hideMenu(); else showMenu();
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); showMenu(); }
+        if (e.key === 'Escape') { hideMenu(); }
+      });
+      menu.querySelectorAll('.dropdown-item').forEach(el => {
+        el.addEventListener('click', () => go(el.dataset.kind));
+      });
+      document.addEventListener('click', (e) => {
+        if (!root.contains(e.target)) hideMenu();
+      });
+    })();
+  </script>
 </body>
 </html>
