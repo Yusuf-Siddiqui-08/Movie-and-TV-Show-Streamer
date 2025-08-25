@@ -13,7 +13,7 @@
     <div class="card">
       <div class="card-inner">
         <h2>Find something to watch</h2>
-        <form onsubmit="return false;" class="grid">
+        <form class="grid">
           <div>
             <label for="title"><span class="badge">Title</span></label>
             <input type="text" id="title" name="title" class="input" placeholder="e.g., Inception" />
@@ -26,33 +26,10 @@
             </div>
           </div>
           <div>
-            <button class="btn" onclick="search()">Search</button>
+            <button class="btn" id="search-btn" type="submit">Search</button>
           </div>
         </form>
       </div>
     </div>
   </section>
-{% endblock %}
-{% block scripts %}
-<script>
-  function search() {
-    const title = document.getElementById('title').value.trim();
-    const checked = Array.from(document.getElementsByName('type')).find(r => r.checked);
-    const type = checked ? checked.value : null;
-    if (!type) {
-      alert('Please select a type!');
-      return;
-    }
-    if (!title) {
-      alert('Please enter a title.');
-      return;
-    }
-    const encodedTitle = encodeURIComponent(title);
-    if (type === 'Movie') {
-      window.location.href = `/search/movie/${encodedTitle}/1/`;
-    } else if (type === 'TV Series') {
-      window.location.href = `/search/tv/${encodedTitle}/1/`;
-    }
-  }
-</script>
 {% endblock %}

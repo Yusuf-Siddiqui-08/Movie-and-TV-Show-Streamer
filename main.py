@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, request, jsonify, send_from_directory
 
 # Optional waitress: fall back to Flask dev server if not available
 try:
@@ -25,7 +25,7 @@ HEADERS = {
     "Authorization": _tmdb_api_key,  # Expecting the correct format already set in env (e.g., 'Bearer <token>')
 }
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 
 def get_year(date: str) -> int:
@@ -52,24 +52,24 @@ def tmdb_search(path: str, query: str, page: int) -> Dict[str, Any]:
     return data
 
 
-@app.route("/")
-def home() -> str:
-    return render_template("home.html")
+@app.get("/api/search/movie")
+def api_search_movies():
+    movie_title = (request.args.get("title", "") or "").strip()
+    try:
+        page_num = int(request.args.get("page", "1") or 1)
+    except Exception:
+        page_num = 1
+    if not movie_title:
+        return jsonify({"error": "Missing required 'title' parameter"}), 400
 
-
-@app.route("/search/movie/<movie_title>/<int:page_num>/")
-def search_movies(movie_title: str, page_num: int):
     data = tmdb_search("/search/movie", movie_title, page_num)
-
     if data.get("status_code") == 46:
-        return data.get("status_message", "An error occurred.")
+        return jsonify({
+            "error": data.get("status_message", "An error occurred."),
+            "status_code": 46,
+        }), 400
 
     total_pages = int(data.get("total_pages", 1))
-    if page_num > total_pages:
-        return (
-            f"There are no more pages! The last page was {total_pages}! "
-            f"Click <a href='/search/movie/{movie_title}/{total_pages}/'>here</a> to see the last page!"
-        )
 
     # Build results list with popularity and rating
     results = data.get("results", [])
@@ -110,32 +110,36 @@ def search_movies(movie_title: str, page_num: int):
     try:
         results_list = sorted(results_list, key=sort_key, reverse=reverse)
     except Exception:
-        # Fallback to original order in case of any unexpected type issues
         pass
 
-    return render_template(
-        "searchMovieResults.html",
-        results=results_list,
-        page=page_num,
-        title=movie_title,
-        sort=sort,
-        order=order,
-    )
+    return jsonify({
+        "results": results_list,
+        "page": page_num,
+        "title": movie_title,
+        "sort": sort,
+        "order": order,
+        "total_pages": total_pages,
+    })
 
 
-@app.route("/search/tv/<tv_title>/<int:page_num>/")
-def search_tv(tv_title: str, page_num: int):
+@app.get("/api/search/tv")
+def api_search_tv():
+    tv_title = (request.args.get("title", "") or "").strip()
+    try:
+        page_num = int(request.args.get("page", "1") or 1)
+    except Exception:
+        page_num = 1
+    if not tv_title:
+        return jsonify({"error": "Missing required 'title' parameter"}), 400
+
     data = tmdb_search("/search/tv", tv_title, page_num)
-
     if data.get("status_code") == 46:
-        return data.get("status_message", "An error occurred.")
+        return jsonify({
+            "error": data.get("status_message", "An error occurred."),
+            "status_code": 46,
+        }), 400
 
     total_pages = int(data.get("total_pages", 1))
-    if page_num > total_pages:
-        return (
-            f"There are no more pages! The last page was {total_pages}! "
-            f"Click <a href='/search/tv/{tv_title}/{total_pages}/'>here</a> to see the last page!"
-        )
 
     # Build results list with popularity and rating
     results = data.get("results", [])
@@ -178,23 +182,22 @@ def search_tv(tv_title: str, page_num: int):
     except Exception:
         pass
 
-    return render_template(
-        "searchTvResults.html",
-        results=results_list,
-        page=page_num,
-        title=tv_title,
-        sort=sort,
-        order=order,
-    )
+    return jsonify({
+        "results": results_list,
+        "page": page_num,
+        "title": tv_title,
+        "sort": sort,
+        "order": order,
+        "total_pages": total_pages,
+    })
 
 
-@app.route("/watch/<item_type>/<id>/")
-def watch(item_type: str, id: str):
-    if item_type == "movie":
-        return render_template("watchMovie.html", id=id)
-    if item_type == "tv":
-        return render_template("watchTv.html", id=id)
-    return "Invalid type", 400
+# Serve the React single-page app
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_client(path: str):
+    # Always serve the SPA entry; static assets are handled by Flask static
+    return send_from_directory(os.path.join(app.static_folder, "react"), "index.html")
 
 
 if __name__ == "__main__":

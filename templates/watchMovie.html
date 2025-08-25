@@ -8,12 +8,3 @@
     </div>
   </div>
 {% endblock %}
-{% block scripts %}
-<script>
-  // Ensure focus styles work and provide minimal UX hint
-  window.addEventListener('load', () => {
-    try { document.getElementById('movie')?.focus(); } catch (e) {}
-    alert('WARNING: USE AN AD-BLOCKER!');
-  });
-</script>
-{% endblock %}

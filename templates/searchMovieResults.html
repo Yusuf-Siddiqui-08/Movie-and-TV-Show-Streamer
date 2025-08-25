@@ -42,32 +42,11 @@
         {% endfor %}
         </tbody>
       </table>
-      <div class="pager">
-        <button class="btn btn-secondary" onclick="changePage('prev')">Prev</button>
+      <div class="pager" data-kind="movie" data-page="{{ page }}" data-title="{{ title }}" data-sort="{{ sort or 'popularity' }}" data-order="{{ order or 'desc' }}">
+        <button class="btn btn-secondary" id="prev-btn" data-action="prev">Prev</button>
         <span class="badge">Page {{ page }}</span>
-        <button class="btn" onclick="changePage('next')">Next</button>
+        <button class="btn" id="next-btn" data-action="next">Next</button>
       </div>
     </div>
   </div>
-{% endblock %}
-{% block scripts %}
-<script>
-  const nextPage = {{ page }} + 1;
-  const prevPage = {{ page }} - 1;
-  const sort = encodeURIComponent(`{{ sort or 'popularity' }}`);
-  const order = encodeURIComponent(`{{ order or 'desc' }}`);
-  function changePage(change) {
-    const encTitle = encodeURIComponent(`{{ title }}`);
-    const qs = `?sort=${sort}&order=${order}`;
-    if (change === 'next') {
-      window.location.href = `/search/movie/${encTitle}/${nextPage}/${qs}`;
-    } else {
-      if (prevPage <= 0) {
-        alert('This is the first page!');
-      } else {
-        window.location.href = `/search/movie/${encTitle}/${prevPage}/${qs}`;
-      }
-    }
-  }
-</script>
 {% endblock %}
