@@ -14,7 +14,7 @@
     <div class="container header-inner">
       <a class="brand" href="/">Streaming Service</a>
       <nav class="nav">
-        <a href="/" class="nav-link">Home</a>
+        <a href="/" class="nav-link" id="nav-home-link">Home</a>
         <div class="nav-search" id="nav-search">
           <input type="text" id="nav-search-input" class="input" placeholder="Search titles..." aria-label="Search titles" />
           <button class="btn" id="nav-search-btn" type="button" aria-haspopup="true" aria-expanded="false">Search</button>
@@ -82,6 +82,27 @@
       document.addEventListener('click', (e) => {
         if (!root.contains(e.target)) hideMenu();
       });
+    })();
+  </script>
+  <script>
+    (function(){
+      // Hide the Home nav link when on the homepage
+      const homeLink = document.getElementById('nav-home-link');
+      if (!homeLink) return;
+      function isHome(){
+        const h = window.location.hash || '';
+        return h === '' || h === '#' || h === '#/' || h === '#%2F' || h === '#%2f';
+      }
+      function update(){
+        if (isHome()) {
+          homeLink.style.display = 'none';
+        } else {
+          homeLink.style.display = '';
+        }
+      }
+      window.addEventListener('hashchange', update);
+      // Run on initial load
+      update();
     })();
   </script>
 </body>
