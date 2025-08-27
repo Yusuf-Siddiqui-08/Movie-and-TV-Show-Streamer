@@ -15,14 +15,15 @@ except Exception:
 
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
-# Validate and build headers once
+# Validate and build headers once (do not print secrets)
 _tmdb_api_key = os.environ.get("TMDB_API_KEY")
-print(_tmdb_api_key)
 if not _tmdb_api_key:
-    raise RuntimeError("Environment variable TMDB_API_KEY is required. Set it to your TMDB bearer token.")
+    raise RuntimeError("Environment variable TMDB_API_KEY is required. Set it to your TMDB API token.")
+# Support both raw token and already-prefixed 'Bearer ...'
+_auth_value = _tmdb_api_key if _tmdb_api_key.lower().startswith("bearer ") else f"Bearer {_tmdb_api_key}"
 HEADERS = {
     "accept": "application/json",
-    "Authorization": _tmdb_api_key,  # Expecting the correct format already set in env (e.g., 'Bearer <token>')
+    "Authorization": _auth_value,
 }
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
