@@ -449,7 +449,10 @@ function Results() {
 function Watch() {
   const route = useRoute();
   const { kind, id } = route.params;
-  const src = kind === 'movie' ? `https://www.2embed.cc/embed/${id}` : `https://www.2embed.cc/embedtvfull/${id}`;
+    const safeId = encodeURIComponent(id);
+  const src = kind === 'movie'
+    ? `https://www.2embed.skin/embed/${safeId}`
+    : `https://www.2embed.skin/embedtv/${safeId}&s=1&e=1`;
 
   useEffect(() => {
     setTimeout(() => alert('WARNING: USE AN AD-BLOCKER!'), 0);
